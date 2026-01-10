@@ -1,1 +1,0 @@
-// give alert when the beds are less (20% left or 10% left)

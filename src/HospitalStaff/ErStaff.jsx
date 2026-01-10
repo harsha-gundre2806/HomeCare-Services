@@ -1,1 +1,0 @@
-// er staff can send the notifications bed requests in emergency cases
