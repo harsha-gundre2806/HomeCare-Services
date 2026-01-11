@@ -1,81 +1,188 @@
 components/admin/
 
-AddEmployee.jsx - Form component with input fields for creating new staff profiles with name, email, phone, specialization, and role selection. Includes validation and submit handler to send data to backend API.
+AddEmployee.jsx - Pure UI form component with input fields (name, email, specialization, role) for creating new staff members. Receives onSubmit handler as prop from parent container, no API logic inside.
 
-ComplaintsManager.jsx - Displays a table/list of all patient complaints with filtering options by status (pending/resolved) and staff member. Allows admin to view complaint details, update status, and take action.
-
-EditEmployee.jsx - Pre-populated form to modify existing staff member details including personal info and specialization. Fetches current staff data on load and updates via PUT request.
-
-EmployeeList.jsx - Data table showing all staff members with columns for name, email, specialization, status, and action buttons. Includes toggle switches for activate/deactivate functionality and edit/delete options.
-
-RevenueDashboard.jsx - Visual dashboard with cards and charts displaying total revenue, daily/monthly breakdowns, and revenue trends. Fetches analytics data from backend and renders using chart library.
+EditEmployee.jsx - Pure UI form component pre-filled with existing staff data passed as props for editing employee information. Receives staff object and onUpdate handler from parent, renders form UI only.
 
 
 components/common/
 
-LoadingSpinner.jsx - Reusable animated spinner component displayed during API calls, data fetching, or page transitions. Accepts optional size and color props for customization.
+LoadingSpinner.jsx - Reusable animated loading indicator component displayed during data fetching or async operations. Shows spinning animation, can be customized with size/color props.
 
-Navbar.jsx - Top horizontal navigation bar with logo, role-based menu links, user profile dropdown, and logout button. Responsive design that collapses to hamburger menu on mobile devices.
+Navbar.jsx - Top horizontal navigation bar component showing app logo, user role, and logout button. Purely presentational, receives user data and logout handler as props from layout.
 
-Notification.jsx - Toast notification component that appears on screen corners to display success/error/info messages from API responses or WebSocket events. Auto-dismisses after 3-5 seconds with close button option.
+Notification.jsx - Toast/popup notification component that displays success/error/info messages triggered by API responses or user actions. Receives message text, type (success/error), and auto-dismiss duration as props.
 
-Sidebar.jsx - Vertical side navigation menu with icons and links specific to user role (admin/staff/patient). Collapsible on mobile with smooth transition animations.
+Sidebar.jsx - Vertical side navigation menu component with role-based links (different menu items for admin/staff/patient). Receives user role as prop to conditionally render appropriate navigation links.
 
 
 components/patient/
 
-AssignedStaffCard.jsx - Card component displaying assigned staff member's photo, name, specialization, rating, and contact information. Shows "Waiting for assignment" state if no staff assigned yet.
+AssignedStaffCard.jsx - Card component displaying assigned staff member's details (photo, name, specialization, rating, contact). Receives staff object as prop and renders information in a styled card format.
 
-CreateProfile.jsx - Multi-step form for new patients to enter personal details (name, age, address) and medical information (history, allergies, notes). Validates required fields before submission to backend.
+CreateProfile.jsx - Form component with input fields for new patients to enter personal info (name, age, DOB, address, medical notes). Pure UI component that receives onSubmit handler from parent container, handles local form state only.
 
-EditProfile.jsx - Form allowing patients to update their existing profile information with pre-filled current values. Includes save and cancel buttons with confirmation dialog.
+EditProfile.jsx - Form component for updating existing patient profile with pre-filled current values passed as props. Receives patient object and onUpdate handler, manages form state and validation locally.
 
-RaiseComplaint.jsx - Form with textarea for complaint description, dropdown to select staff member, and submit button. Validates minimum character length and sends complaint to admin dashboard.
+OTPStatus.jsx - Real-time status indicator showing OTP generation, sharing, and verification progress with visual timeline/stepper. Receives OTP status from props (WebSocket data) and displays current state (generated/verified/expired).
 
-RateStaff.jsx - Rating interface with star selection (1-5), optional text feedback field, and submit button. Appears after service completion and updates staff's average rating.
+RaiseComplaint.jsx - Form component with textarea for complaint description and staff selection dropdown for patients to submit grievances. Receives staff list and onSubmit handler as props, validates minimum text length locally.
 
-ServiceRequest.jsx - Form for patients to create new service requests with service type selection and additional notes field. Submits request that enters admin queue with "queued" status.
+RateStaff.jsx - Interactive rating component with star selection (1-5 stars) and optional text feedback field for post-service rating. Receives service/staff ID as props and onSubmit handler to send rating to parent container.
+
+ServiceRequest.jsx - Form component for creating new service requests with service type dropdown, urgency selection, and notes textarea. Pure UI receiving onSubmit handler from container, manages form state without API calls.
 
 
 components/staff/
 
-MyRatings.jsx - Displays staff member's average rating score, total number of ratings, and list of individual patient feedback comments. Helps staff track their performance over time.
+MyRatings.jsx - Display component showing staff member's average rating score, total ratings count, and list of individual patient feedback. Receives ratings array as prop from container and renders in card/list format.
 
-ServiceStatus.jsx - Shows current service progress with visual timeline/stepper (queued → assigned → medication started → completed). Includes "Mark as Done" button when service is active.
+OTPVerification.jsx - Input form component for staff to enter and verify patient's 4-6 digit OTP code with submit button. Receives onVerify handler as prop, validates OTP format locally before submission.
+
+ServiceStatus.jsx - Progress indicator component showing service timeline (queued → assigned → medication → completed) with visual stepper. Receives current status and service details as props, displays "Mark as Done" button when applicable.
+
+
+containers/admin/
+
+AdminDashboard.jsx - Container component that fetches and manages state for admin overview data (stats, recent activity, pending requests). Makes API calls via useEffect, passes data down to presentational child components, handles business logic.
+
+ComplaintsManager.jsx - Container managing complaints data fetching, filtering, and status updates with state management for pending/resolved tabs. Fetches complaints from API, provides handlers to child components for updating complaint status.
+
+RevenueDashboard.jsx - Container component that fetches revenue analytics data from API and manages chart/metrics state for visualization. Handles date range filtering logic and passes processed data to chart components.
+
+StaffManagement.jsx - Container managing staff CRUD operations, fetching employee list, and handling add/edit/activate/deactivate actions. Provides data and callback functions to AddEmployee, EditEmployee, and EmployeeList components.
+
+
+containers/
+
+PatientDashboard.jsx - Container fetching patient's current service request status, assigned staff info, and OTP details from API. Manages real-time WebSocket connection for live updates and passes data to child components.
+
+StaffDashboard.jsx - Container fetching staff member's assigned patients, personal ratings, and today's tasks from API with state management. Provides data and action handlers to child components for OTP verification and service completion.
+
+
+layout/
+
+DashboardLayout.jsx - Wrapper layout component that renders Navbar + Sidebar + main content area, adapts menu based on user role. Receives children (page content) and user context, provides consistent layout structure across all dashboard pages.
+
+
+lib/
+
+supabase.js - Supabase client initialization and configuration file exporting configured client instance for use across the app. Contains Supabase URL and anon key, creates and exports single supabase client object.
 
 
 pages/admin/
 
-AdminDashboard.jsx - Main landing page after admin login showing overview cards with key metrics (total requests, active staff, pending complaints, today's revenue). Includes quick action buttons and recent activity feed.
+Analytics.jsx - Page component that imports and renders RevenueDashboard container with analytics charts and metrics display. Thin wrapper that may add page-specific layout or title, delegates data logic to container.
 
-Analytics.jsx - Comprehensive analytics page with multiple charts (line, bar, pie) showing revenue trends, staff performance comparisons, service completion rates, and monthly statistics. Includes date range filters and export options.
+ComplaintsPage.jsx - Page component rendering ComplaintsManager container with full-page complaints management interface including tabs and filters. Acts as route entry point, may add page header or breadcrumbs.
 
-ComplaintsPage.jsx - Full-page view dedicated to complaint management with tabs for pending/resolved complaints and detailed complaint cards. Allows admin to add notes and change complaint status.
-
-QueueManagement.jsx - Real-time queue display showing all pending service requests in chronological order with patient details. Includes "Assign Staff" dropdown for each request with available staff list.
-
-StaffManagement.jsx - Complete staff management interface with employee list, add/edit forms in modals, and bulk actions. Shows staff status, ratings, and provides quick activate/deactivate controls.
+QueueManagement.jsx - Page component displaying real-time service request queue with assign staff functionality and live updates via WebSocket. Main admin workflow page for managing patient requests and staff assignments.
 
 
 pages/auth/
 
-ForgotPassword.jsx - Password reset page with email input field that sends reset link via Nodemailer. Shows success message after email sent and handles error states.
+ForgotPassword.jsx - Authentication page with email input form that sends password reset link via backend API to user's email. Handles form submission, displays success/error messages, includes link back to login.
 
-Login.jsx - Main authentication page with email/password inputs, "Remember me" checkbox, and role-based redirect after successful login (admin/staff/patient dashboards). Includes forgot password link and registration link for patients.
+Login.jsx - Main authentication page with email/password form that validates credentials and redirects to role-based dashboard after successful login. Handles Supabase auth, stores user session, includes links to register and forgot password.
 
-Register.jsx - Patient registration page with form fields for name, email, phone, password, and password confirmation. Validates email format, password strength, and creates new patient account.
+Register.jsx - Patient registration page with form fields (name, email, phone, password, confirm password) creating new patient accounts. Validates input, checks password strength, creates Supabase user, and redirects to patient dashboard.
 
 
 pages/patient/
 
-MyRequests.jsx - History page showing all patient's service requests in table format with columns for date, status, assigned staff, and rating given. Allows filtering by status and viewing request details.
+MyRequests.jsx - Page displaying patient's service request history in table/card format with filtering by status (queued/completed/all). Fetches request data from API, allows viewing details and ratings given for each request.
 
-PatientDashboard.jsx - Patient home page displaying current request status, assigned staff card, OTP verification section, and quick links to request service or view history. Shows real-time updates via WebSocket.
-
-RequestService.jsx - Dedicated full-page form for creating detailed service requests with service type selection, urgency level, and description textarea. Confirms submission and redirects to dashboard.
+RequestService.jsx - Full-page form for creating detailed service requests with service type, urgency level, and description fields. Submits new request to queue via API, shows confirmation, and redirects to dashboard.
 
 
 pages/staff/
 
-StaffDashboard.jsx - Staff home page showing today's assigned patients count, personal rating display, and list of current assignments with patient details. Includes quick access to OTP verification and service completion actions.
+MyAssignments.jsx - Page displaying detailed list of all current and past patient assignments for logged-in staff member with action buttons. Shows patient details, service status, OTP verification section, and completion controls.
 
+
+routes/
+
+routes.jsx - Central routing configuration defining all application routes with role-based access control and protected routes. Maps URLs to page components, wraps routes with authentication/authorization checks based on user role.
+
+
+styles/
+
+AddEmp.css - Stylesheet specific to AddEmployee/EditEmployee form components with input styling, button styles, and form layout. Contains CSS for form validation states, error messages, and responsive design.
+
+dashboard.css - Common dashboard page styling including card layouts, grid systems, stats widgets, and responsive breakpoints. Applied across all dashboard pages (admin/staff/patient) for consistent look.
+
+global.css - Application-wide base styles including CSS resets, typography, color variables, and utility classes used everywhere. Loaded first, defines design system tokens (colors, spacing, fonts).
+
+navbar.css - Styling for top navigation bar including logo placement, menu items, user dropdown, and mobile hamburger menu. Contains responsive behavior and hover/active states.
+
+notification.css - Toast notification styling including positioning (top-right corner), animations (slide-in/fade-out), and color coding by type (success/error/info). Defines z-index for proper layering.
+
+queue.css - Specific styling for queue management page including queue cards, status badges, assign dropdowns, and real-time update animations. Handles queue item layout and priority indicators.
+
+
+
+src/
+├── api/
+│   └── api.txt ---> will be added later
+├── assets/
+│   └── react.svg
+├── components/
+│   ├── admin/
+│   │   ├── AddEmployee.jsx
+│   │   └── EditEmployee.jsx
+│   ├── common/
+│   │   ├── LoadingSpinner.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Notification.jsx
+│   │   └── Sidebar.jsx
+│   ├── patient/
+│   │   ├── AssignedStaffCard.jsx
+│   │   ├── CreateProfile.jsx
+│   │   ├── EditProfile.jsx
+│   │   ├── OTPStatus.jsx
+│   │   ├── RaiseComplaint.jsx
+│   │   ├── RateStaff.jsx
+│   │   └── ServiceRequest.jsx
+│   └── staff/
+│       ├── MyRatings.jsx
+│       ├── OTPVerification.jsx
+│       └── ServiceStatus.jsx
+├── containers/
+│   ├── admin/
+│   │   ├── AdminDashboard.jsx
+│   │   ├── ComplaintsManager.jsx
+│   │   ├── RevenueDashboard.jsx
+│   │   └── StaffManagement.jsx
+│   ├── PatientDashboard.jsx
+│   └── StaffDashboard.jsx
+├── layout/
+│   └── DashboardLayout.jsx
+├── lib/
+│   └── supabase.js
+├── pages/
+│   ├── admin/
+│   │   ├── Analytics.jsx
+│   │   ├── ComplaintsPage.jsx
+│   │   └── QueueManagement.jsx
+│   ├── auth/
+│   │   ├── ForgotPassword.jsx
+│   │   ├── Login.jsx
+│   │   └── Register.jsx
+│   ├── patient/
+│   │   ├── MyRequests.jsx
+│   │   └── RequestService.jsx
+│   └── staff/
+│       └── MyAssignments.jsx
+├── routes/
+│   └── routes.jsx
+├── styles/
+│   ├── AddEmp.css
+│   ├── dashboard.css
+│   ├── global.css
+│   ├── navbar.css
+│   ├── notification.css
+│   └── queue.css              ---> some other css files will be added later
+├── App.css
+├── App.jsx
+├── index.css
+└── main.jsx
