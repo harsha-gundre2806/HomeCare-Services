@@ -1,6 +1,7 @@
 // Form for new patients to create their profile with medical details
 
 import React,{useState} from 'react'
+import Notification from '../common/Notification';
 
 export default function CreateProfile() {
     const [name,setName]=useState('');
@@ -8,10 +9,14 @@ export default function CreateProfile() {
     const [email,setEmail]=useState('');
     const[dob,setDob]=useState('');
     const [address,setAddress]=useState('');
+    const [notify, setNotify] = useState('');
 
     const handleSubmit = (e)=> {
         e.preventDefault();
-        // need to add notification
+
+        setNotify('profile created');
+        setTimeout(() => setNotify(''), 5000);
+        
         console.log('details submitted');
         setName('');
         setNumber('');
@@ -21,7 +26,9 @@ export default function CreateProfile() {
     }
   return (
     <>
+    {notify && <Notification message={notify} />}
     <div className='container'>
+    
         <form onSubmit={handleSubmit} className='form'>
             <input 
             type='text'

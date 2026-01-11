@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import AddEmployeePage from "../pages/admin/AddEmployeePage";
+import CreateProfile from "../components/patient/CreateProfile";
 
 const router = createBrowserRouter([
   {
@@ -10,6 +11,12 @@ const router = createBrowserRouter([
     path: "/add-employee",
     element: <AddEmployeePage />,
   },
+  {
+    path: "/create-profile",
+    element: <CreateProfile />,
+  },
+
+  
 ]);
 
 export default router;
