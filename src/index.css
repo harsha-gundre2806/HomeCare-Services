@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -65,4 +63,23 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+#root {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+input,
+select {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #213547;
+}
+
+form {
+  max-width: 400px;
 }
