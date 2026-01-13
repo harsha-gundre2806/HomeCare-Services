@@ -46,7 +46,7 @@ export default function EditProfile() {
     <>
       {notify && <Notification message={notify} />}
       <div className='container'>
-        <div className='form'>
+        <form onSubmit={handleSubmit} className='form'>
           <input 
             type='text'
             placeholder='Enter name'
@@ -83,10 +83,10 @@ export default function EditProfile() {
             value={address}
             onChange={(e) => setAddress(e.target.value)}
           />
-          <button type="button" onClick={handleSubmit}>
+          <button type="submit">
             Update Profile
           </button>
-        </div>
+        </form>
       </div>    
     </>
   );

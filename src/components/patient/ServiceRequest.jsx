@@ -27,6 +27,18 @@ export default function ServiceRequest() {
         setAddress('');
         setText('');
     }
+
+    useEffect(()=>{
+      const existingProfile={
+        name:'example name',
+        number:'9876543210',
+        address:'india',
+      };
+      setName(existingProfile.name);
+      setNumber(existingProfile.number);
+      setAddress(existingProfile.address);
+    },[]);
+
   return (
     <>
     {notify && <Notification message={notify}/> }    
@@ -54,15 +66,19 @@ export default function ServiceRequest() {
             value={address}
             onChange={(e)=>setAddress(e.target.value)}
             />
-            <input
+            <textarea
             type='text'
-            required
-            value={text}
             placeholder='enter the reason for service'
-            onChange={(e)=>setText(e.target.value)}
+            value={text}
+            rows='3'
+            style={{
+                backgroundColor:'white',
+                color:'black',
+            }}
 
+            onChange={(e)=>setText(e.target.value)}
             />
-          <button type="submit">
+          <button type="submit" >
             submit details
           </button>
         </form>

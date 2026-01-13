@@ -21,7 +21,10 @@ export default function RateStaff() {
         };
         setName(existingprofile.name);
         setNumber(existingprofile.number);
-    });
+        setStaff('');
+        setRating(0);
+        setText('');
+    },[]);
 
     const handleSubmit =(e)=>{   // we will connect it to backend
         e.preventDefault(); 
@@ -37,14 +40,14 @@ export default function RateStaff() {
             text
         });
         setNotify('thankyou for your rating');
-        setTimeout((e)=>setNotify(''),5000);
+        setTimeout(()=>setNotify(''),5000);
     };
 
   return (
     <>
  {notify && <Notification message = {notify} /> }
     <div className='container'>
-        <div className='form'>
+        <form onSubmit={handleSubmit} className='form'>
             <input
             type='text'
             placeholder='name of patient'
@@ -87,10 +90,10 @@ export default function RateStaff() {
             onChange={(e)=>setText(e.target.value)}
             />
 
-            <button type='button' onClick={handleSubmit}>
+            <button type='submit'>
                 submit
             </button>
-        </div>
+        </form>
     </div>
     </>
   );

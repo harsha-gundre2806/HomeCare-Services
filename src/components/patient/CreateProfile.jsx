@@ -31,7 +31,7 @@ export default function CreateProfile() {
     {notify && <Notification message={notify} />}
     <div className='container'>
     
-        <form onSubmit={handleSubmit} className='form'>
+        <form className='form' onSubmit={handleSubmit}>
             <input 
             type='text'
             placeholder='enter name'
