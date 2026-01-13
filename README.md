@@ -121,21 +121,22 @@ queue.css - Specific styling for queue management page including queue cards, st
 
 
 
+
 src/
-├── api/
-│   └── api.txt ---> will be added later
-├── assets/
+├── api/                  # Backend service connections
+│   └── api.txt
+├── assets/               # Static files (images, SVGs)
 │   └── react.svg
-├── components/
-│   ├── admin/
+├── components/           # UI Components (Presentational)
+│   ├── admin/            # Admin-specific UI elements
 │   │   ├── AddEmployee.jsx
 │   │   └── EditEmployee.jsx
-│   ├── common/
+│   ├── common/           # Reusable UI across all roles
 │   │   ├── LoadingSpinner.jsx
 │   │   ├── Navbar.jsx
 │   │   ├── Notification.jsx
 │   │   └── Sidebar.jsx
-│   ├── patient/
+│   ├── patient/          # Patient-specific UI elements
 │   │   ├── AssignedStaffCard.jsx
 │   │   ├── CreateProfile.jsx
 │   │   ├── EditProfile.jsx
@@ -143,46 +144,47 @@ src/
 │   │   ├── RaiseComplaint.jsx
 │   │   ├── RateStaff.jsx
 │   │   └── ServiceRequest.jsx
-│   └── staff/
+│   └── staff/            # Staff-specific UI elements
 │       ├── MyRatings.jsx
 │       ├── OTPVerification.jsx
 │       └── ServiceStatus.jsx
-├── containers/
-│   ├── admin/
+├── containers/           # Business logic & state management wrappers
+│   ├── admin/            
+│   │   ├── AddEmployeeContainer.jsx
 │   │   ├── AdminDashboard.jsx
 │   │   ├── ComplaintsManager.jsx
 │   │   ├── RevenueDashboard.jsx
 │   │   └── StaffManagement.jsx
 │   ├── PatientDashboard.jsx
 │   └── StaffDashboard.jsx
-├── layout/
+├── layout/               # Page structure templates
 │   └── DashboardLayout.jsx
-├── lib/
-│   └── supabase.js
-├── pages/
+├── lib/                  # Third-party configurations
+│   └── supabase.js       # Database connection logic
+├── pages/                # Route-level components
 │   ├── admin/
+│   │   ├── AddEmployeePage.jsx
 │   │   ├── Analytics.jsx
 │   │   ├── ComplaintsPage.jsx
 │   │   └── QueueManagement.jsx
-│   ├── auth/
+│   ├── auth/             # Login and Password flows
 │   │   ├── ForgotPassword.jsx
-│   │   ├── Login.jsx
-│   │   └── Register.jsx
+│   │   └── Login.jsx
 │   ├── patient/
-│   │   ├── MyRequests.jsx
-│   │   └── RequestService.jsx
+│   │   └── MyRequests.jsx
 │   └── staff/
 │       └── MyAssignments.jsx
-├── routes/
+├── routes/               # Navigation logic
 │   └── routes.jsx
-├── styles/
+├── styles/               # CSS Modules and Global styles
 │   ├── AddEmp.css
-│   ├── dashboard.css
-│   ├── global.css
-│   ├── navbar.css
-│   ├── notification.css
-│   └── queue.css              ---> some other css files will be added later
+│   ├── Dashboard.css
+│   ├── Global.css
+│   ├── Navbar.css
+│   ├── Notification.css
+│   ├── Patientprofile.css
+│   └── Queue.css
 ├── App.css
-├── App.jsx
-├── index.css
-└── main.jsx
+├── App.jsx               # Root Component
+├── index.css             # Base styles
+├── main.jsx              # Entry point
