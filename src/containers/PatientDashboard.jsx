@@ -3,7 +3,7 @@
 
 
 import { useState } from 'react';
-import '../styles/Dashboard.css'; 
+//import '../styles/Dashboard.css'; 
 
 
 import CreateProfile from '../components/patient/CreateProfile';
