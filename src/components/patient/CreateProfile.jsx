@@ -6,28 +6,50 @@
 import '../../styles/Patientprofile.css'
 import {useState} from 'react'
 import Notification from '../common/Notification';
+import { supabase } from "../../lib/supabase";
 
-export default function CreateProfile() {
+export default function CreateProfile({ onSuccess }) {
     const [name,setName]=useState('');
     const [number,setNumber]=useState('');
     const [email,setEmail]=useState('');
     const[dob,setDob]=useState('');
     const [address,setAddress]=useState('');
     const [notify, setNotify] = useState('');
+    
 
-    const handleSubmit = (e)=> {    // we will connect it to backend
-        e.preventDefault();
+    const handleSubmit = async (e) => {
+      e.preventDefault();
 
-        setNotify('profile created');
-        setTimeout(() => setNotify(''), 5000);
-        
-        console.log('details submitted');
-        setName('');
-        setNumber('');
-        setEmail('');
-        setDob('');
-        setAddress('');
-    }
+      const { data, error } = await supabase.from("patients").insert([
+        {
+          name,
+          phone : number,
+          email,
+          dob,
+          address,
+        },
+      ])
+      .select()
+      .single();
+
+      
+
+      if (error) {
+        console.error(error);
+        setNotify("Failed to create profile");
+        return;
+      }
+
+      localStorage.setItem("patientId",data.id);
+      localStorage.setItem("patientEmail",data.email);
+
+      setNotify("Profile created Successfully");
+
+      setTimeout(() => {
+        onSuccess && onSuccess();
+      }, 800)
+    };
+
   return (
     <>
     {notify && <Notification message={notify} />}
@@ -36,7 +58,7 @@ export default function CreateProfile() {
         <form className='form' onSubmit={handleSubmit}>
             <input 
             type='text'
-            placeholder='enter name'
+            placeholder='Enter your name'
             value={name}
             required
             onChange={(e)=>setName(e.target.value)}
@@ -44,34 +66,34 @@ export default function CreateProfile() {
             <input 
             type='tel'
             value={number}
-            placeholder='enter mobile number'
+            placeholder='Enter mobile number'
             required
             onChange={(e)=>setNumber(e.target.value)}
             />
             <input
             type='email'
             value={email}
-            placeholder='enter email'
+            placeholder='Enter email'
             required
             onChange={(e)=>setEmail(e.target.value)} 
             />
             <input 
             type='date'
             value={dob}
-            placeholder='date of birth'
+            placeholder='Date of birth'
             required
             onChange={(e)=>setDob(e.target.value)}  
             onFocus={(e) => e.target.showPicker && e.target.showPicker()}                    
             />
             <input
             type='text'
-            placeholder='enter address'
+            placeholder='Enter address'
             required
             value={address}
             onChange={(e)=>setAddress(e.target.value)}
             />
           <button type="submit">
-            submit details
+            Submit details
           </button>
         </form>
 

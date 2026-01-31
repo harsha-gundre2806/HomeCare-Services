@@ -3,7 +3,9 @@
 
 
 import { useState,useEffect } from 'react';
-import '../styles/Dashboard.css'; 
+import { supabase } from "../lib/supabase";
+import '../styles/Patientprofile.css'; 
+import "../styles/dashboard.css";
 
 
 import CreateProfile from '../components/patient/CreateProfile';
@@ -16,26 +18,63 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 export default function PatientDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
     const [isLoading, setIsLoading] = useState(true);
+    const [patient, setPatient] = useState(null);
 
-    useEffect(() => {
-        setTimeout(() => {   //loading will be changed later according to code
+   useEffect(() => {
+    const fetchPatient = async () => {
+        const email = localStorage.getItem("patientEmail");
+
+        if(!email) {
             setIsLoading(false);
-        }, 3000);
-    }, []);
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from("patients")
+            .select("*")
+            .eq("email",email)
+            .single();
+
+        if (error) {
+            console.error(error);
+        } else {
+            setPatient(data);
+            localStorage.setItem("patientId", data.id);
+        }
+
+        setIsLoading(false);
+    };
+
+    fetchPatient();
+   },[]);
 
     const Content = () => {
         switch (activeTab) {
-            case 'create': return <CreateProfile />;
-            case 'edit': return <EditProfile />;
-            case 'complaint': return <RaiseComplaint />;
-            case 'rate': return <RateStaff />;
-            case 'request': return <ServiceRequest />;  
-            default: return (
-            <div style={{textAlign: 'center', color:'black' , marginTop: '50px'}}>
-                <h1>welcome to home care services</h1>
-                <p>select option from sidebar</p>
-            </div>
-        );   
+            case 'create': return <CreateProfile onSuccess={() => setActiveTab('overview')} />;
+            case 'edit': return <EditProfile onSuccess={() => setActiveTab("overview")} />;
+            case 'complaint': return <RaiseComplaint onSuccess={() => setActiveTab("overview")} />;
+            case 'rate': return <RateStaff onSuccess={() => setActiveTab("overview")} />;
+            case 'request': return <ServiceRequest onSuccess={() => setActiveTab("overview")} />;  
+            default:
+  return (
+    <div style={{ color: "black" }}>
+      <h1>Welcome to Home Care Services</h1>
+
+      {patient ? (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Patient Profile</h3>
+          <p><strong>Name:</strong> {patient.name}</p>
+          <p><strong>Phone:</strong> {patient.phone}</p>
+          <p><strong>Email:</strong> {patient.email}</p>
+          <p><strong>Date of Birth:</strong> {patient.dob}</p>
+          <p><strong>Address:</strong> {patient.address}</p>
+        </div>
+      ) : (
+        <p>No patient profile found. Please create your profile.</p>
+      )}
+    </div>
+  );
+  
         }
     };
     return (

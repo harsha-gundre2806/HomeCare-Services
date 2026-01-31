@@ -1,106 +1,116 @@
-//Form to submit new service request that enters admin queue
-// used same css as create profile and edit profile
-// connect it to supabase
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
+import Notification from "../common/Notification";
+import "../../styles/Patientprofile.css";
 
+export default function ServiceRequest({ onSuccess }) {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [text, setText] = useState("");
+  const [emergency, setEmergency] = useState("");
+  const [notify, setNotify] = useState("");
 
-import {useState,useEffect} from 'react';
-import Notification from '../common/Notification';
-import '../../styles/Patientprofile.css';
+  useEffect(() => {
+    const fetchPatient = async () => {
+      const patientId = localStorage.getItem("patientId");
+      if (!patientId) return;
 
-export default function ServiceRequest() {
-    const [number,setNumber] = useState('');
-    const [name,setName] = useState('');
-    const [address,setAddress] = useState('');
-    const [text , setText] = useState('');
-    const [notify,setNotify]=  useState('');
-    const [emergency , setEmergency]=useState('');
+      const { data, error } = await supabase
+        .from("patients")
+        .select("name, phone, address")
+        .eq("id", patientId)
+        .single();
 
-    const handleSubmit=(e)=>{   // we will connect it to backend
-        e.preventDefault();
-        setNotify('Details submitted successfully , you will receive estimated time of staff arrival and conformation message in a minute');
-        setTimeout(()=> setNotify(''),8000);
-        
-        console.log('details submitted',{
-            name,
-            number,
-            address,
-            text
-        });
-        setName('');
-        setNumber('');
-        setAddress('');
-        setText('');
-        setEmergency('');
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setName(data.name);
+      setNumber(data.phone);
+      setAddress(data.address);
+    };
+
+    fetchPatient();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const patientId = localStorage.getItem("patientId");
+    if (!patientId) {
+      setNotify("Patient profile not found");
+      return;
     }
 
-    useEffect(()=>{
-      const existingProfile={
-        name:'example name',
-        number:'9876543210',
-        address:'india',
-      };
-      setName(existingProfile.name);
-      setNumber(existingProfile.number);
-      setAddress(existingProfile.address);
-    },[]);
+    const { error } = await supabase
+      .from("service_requests")
+      .insert([
+        {
+          patient_id: patientId,
+          name,
+          phone: number,
+          address,
+          reason: text,
+          service_type: emergency || "regular",
+          status: "pending",
+        },
+      ]);
+
+    if (error) {
+      console.error(error);
+      setNotify("Failed to submit service request");
+      return;
+    }
+
+    setNotify("Service request submitted successfully");
+
+    setTimeout(() => {
+      onSuccess && onSuccess();
+    }, 1000);
+  };
 
   return (
     <>
-    {notify && <Notification message={notify}/> }    
-    <div className='container'>
-    
-        <form onSubmit={handleSubmit} className='form'>
-            <input 
-            type='text'
-            placeholder='enter name'
+      {notify && <Notification message={notify} />}
+      <div className="container">
+        <form onSubmit={handleSubmit} className="form">
+          <input
+            type="text"
             value={name}
             required
-            onChange={(e)=>setName(e.target.value)}
-            />
-            <input 
-            type='tel'
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            type="tel"
             value={number}
-            placeholder='enter mobile number'
             required
-            onChange={(e)=>setNumber(e.target.value)}
-            />
-            <input
-            type='text'
-            placeholder='enter address'
-            required
+            onChange={(e) => setNumber(e.target.value)}
+          />
+          <input
+            type="text"
             value={address}
-            onChange={(e)=>setAddress(e.target.value)}
-            />
-            <textarea
-            type='text'
-            placeholder='enter the reason for service'
+            required
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <textarea
             value={text}
-            rows='3'
-            style={{
-                backgroundColor:'white',
-                color:'black',
-                borderRadius:'8px',
-            }}
+            rows="3"
+            onChange={(e) => setText(e.target.value)}
+          />
+          <select
+            value={emergency}
+            onChange={(e) => setEmergency(e.target.value)}
+          >
+            <option value="">select service type</option>
+            <option value="regular">Regular</option>
+            <option value="emergency">Emergency</option>
+          </select>
 
-            onChange={(e)=>setText(e.target.value)}
-            />
-            <select
-              value={emergency}
-              onChange={(e) => setEmergency(e.target.value)}
-              required
-              >
-                <option value=" ">select service type (default is regular service)</option>
-                <option value="regular checkup" default>Regular checkup</option>
-                <option value="emergency">emergency</option>
-            </select>
-            
-          <button type="submit" >
-            submit details
-          </button>
+          <button type="submit">Submit Details</button>
         </form>
-
-    </div> 
+      </div>
     </>
-  )
+  );
 }
-

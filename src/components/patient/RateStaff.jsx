@@ -1,108 +1,107 @@
-//Form for patients to rate and provide feedback on staff service
-// connect it to supabase
+import { useState, useEffect } from "react";
+import { Rating } from "react-simple-star-rating";
+import { supabase } from "../../lib/supabase";
+import Notification from "../common/Notification";
+import "../../styles/Patientprofile.css";
 
-import {useState , useEffect} from 'react'
-import Notification from '../common/Notification'
-import '../../styles/Patientprofile.css'
-import { Rating } from 'react-simple-star-rating'
+export default function RateStaff({ onSuccess }) {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [staff, setStaff] = useState("");
+  const [rating, setRating] = useState(0);
+  const [text, setText] = useState("");
+  const [notify, setNotify] = useState("");
 
-export default function RateStaff() {
+  useEffect(() => {
+    const fetchPatient = async () => {
+      const patientId = localStorage.getItem("patientId");
+      if (!patientId) return;
 
-    const [name, setName] = useState('');
-    const [number, setNumber] = useState('');
-    const [notify,setNotify]=useState('');
-    const [rating,setRating]=useState(0);
-    const [staff,setStaff]=useState('');
-    const [text,setText]=useState('');
+      const { data } = await supabase
+        .from("patients")
+        .select("name, phone")
+        .eq("id", patientId)
+        .single();
 
-    useEffect(()=>{  // it will be fetched form the patient profile later
-        const existingprofile={
-            name:'example name',
-            number:'9876543210',
-        };
-        setName(existingprofile.name);
-        setNumber(existingprofile.number);
-        setStaff('');
-        setRating(0);
-        setText('');
-    },[]);
-
-    const handleSubmit =(e)=>{   // we will connect it to backend
-        e.preventDefault(); 
-        if(!rating || rating === 0){
-           alert("Please select a star rating before submitting.");
-           return;
-        }
-        console.log('thankyou for your rating ',{
-            name,
-            number,
-            staff,
-            rating,
-            text
-        });
-        setNotify('thankyou for your rating');
-        setTimeout(()=>setNotify(''),5000);
-
-        setName('');
-        setNumber('');
-        setStaff('');
-        setRating('');
-        setText('');
+      if (data) {
+        setName(data.name);
+        setNumber(data.phone);
+      }
     };
+
+    fetchPatient();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!rating) {
+      setNotify("Please select a star rating");
+      return;
+    }
+
+    const patientId = localStorage.getItem("patientId");
+    if (!patientId) {
+      setNotify("Patient not found. Please login again.");
+      return;
+    }
+
+    const { error } = await supabase.from("staff_ratings").insert({
+      patient_id: patientId,
+      patient_name: name,
+      patient_phone: number,
+      staff,
+      rating,
+      feedback: text,
+    });
+
+    if (error) {
+      console.error(error);
+      setNotify("Failed to submit rating");
+      return;
+    }
+
+    setNotify("Thank you for your rating");
+
+    setTimeout(() => {
+      onSuccess && onSuccess();
+    }, 800);
+  };
 
   return (
     <>
- {notify && <Notification message = {notify} /> }
-    <div className='container'>
-        <form onSubmit={handleSubmit} className='form'>
-            <input
-            type='text'
-            placeholder='name of patient'
-            value={name}
-            required
-            onChange={(e)=>setName(e.target.value)}
-            /> 
-            <input 
-            type='tel'
-            placeholder='mobile number'
-            value={number}
-            required
-            onChange={(e)=>setNumber(e.target.value)}
-            />
-            <input 
-            type='text'
-            placeholder='enter staff name / id'
+      {notify && <Notification message={notify} />}
+      <div className="container">
+        <form onSubmit={handleSubmit} className="form">
+          <input value={name} disabled />
+          <input value={number} disabled />
+
+          <input
+            type="text"
+            placeholder="Enter staff name / id"
             value={staff}
+            required
+            onChange={(e) => setStaff(e.target.value)}
+          />
 
-            onChange={(e)=>setStaff(e.target.value)}
-            />
-            <Rating 
-            initialValue={rating} 
-            onClick={(rate) => setRating(rate)} 
+          <Rating
+            initialValue={rating}
+            onClick={(rate) => setRating(rate)}
             size={30}
-            transition
-            fillColor='orange'
-            emptyColor='gray'
-            />
-            <textarea
-            type='text'
-            placeholder='give your feedback / recomended changes'
+            fillColor="orange"
+            emptyColor="gray"
+          />
+
+          <textarea
+            placeholder="Give your feedback"
             value={text}
-            rows='3'
-            style={{
-                backgroundColor:'white',
-                color:'black',
-                borderRadius:'8px',
-            }}
+            rows="3"
+            onChange={(e) => setText(e.target.value)}
+          />
 
-            onChange={(e)=>setText(e.target.value)}
-            />
-
-            <button type='submit'>
-                submit
-            </button>
+          <button type="submit">Submit</button>
         </form>
-    </div>
+      </div>
     </>
   );
 }
