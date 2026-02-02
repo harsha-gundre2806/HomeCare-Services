@@ -1,7 +1,7 @@
 //Toast/popup component for real-time notifications
 
 import React, { useEffect, useState } from 'react';
-import '../../styles/Notification.css';
+import "/src/styles/Notification.css";
 
 export default function Notification(
     { message = " " } ) 
