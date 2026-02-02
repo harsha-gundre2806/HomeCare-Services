@@ -5,7 +5,7 @@
 import { useState,useEffect } from 'react';
 import { supabase } from "../lib/supabase";
 import '../styles/Patientprofile.css'; 
-import "../styles/dashboard.css";
+import "../styles/Dashboard.css";
 
 
 import CreateProfile from '../components/patient/CreateProfile';
