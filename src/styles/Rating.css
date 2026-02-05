@@ -1,0 +1,84 @@
+/* ai generated */
+
+/* MAIN CARD */
+.rating-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px 34px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+.rating-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 28px;
+}
+
+/* SUMMARY BOX */
+.rating-summary {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  margin-bottom: 28px;
+  border: 1px solid #e2e8f0;
+}
+
+.rating-total {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.rating-average {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+/* SECTION TITLE */
+.rating-list-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+/* RATING ROW */
+.rating-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 4px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s ease;
+}
+
+.rating-item:hover {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.rating-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* EMPTY TEXT */
+.rating-empty {
+  text-align: center;
+  padding: 16px;
+  color: #9ca3af;
+}
+
+ 
