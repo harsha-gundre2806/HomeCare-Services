@@ -1,0 +1,19 @@
+{
+  "name": "bedmanager-backend",
+  "version": "1.0.0",
+  "description": "Backend for BedManager",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node -r dotenv/config server.js",
+    "dev": "node -r dotenv/config server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.94.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "resend": "^6.9.1"
+  }
+}

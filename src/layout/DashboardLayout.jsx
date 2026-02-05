@@ -9,6 +9,10 @@ export default function DashboardLayout({
   onBack,
   showBackButton = false,
 }) {
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
   return (
     <div className="d-viewport">
       <div className="d-container">
@@ -18,16 +22,27 @@ export default function DashboardLayout({
         </aside>
 
         <main className="d-content">
-          {showBackButton && (
-            <button className="d-btn" onClick={onBack}>
-              Back to Dashboard
-            </button>
-          )}
+  {/* HEADER BAR */}
+  <div className="d-header">
+    {showBackButton ? (
+      <button className="d-btn" onClick={onBack}>
+        Back to Dashboard
+      </button>
+    ) : (
+      <div />
+    )}
 
-          <div className="d-wrapper">
-            {children}
-          </div>
-        </main>
+    <button className="d-logout" onClick={handleLogout}>
+      Logout
+    </button>
+  </div>
+
+  <div className="d-wrapper">
+    {children}
+  </div>
+</main>
+
+        
       </div>
     </div>
   );

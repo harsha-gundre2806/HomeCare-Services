@@ -6,6 +6,7 @@
 import '../../styles/Patientprofile.css'
 import {useState} from 'react'
 import Notification from '../common/Notification';
+import bcrypt from 'bcryptjs';
 import { supabase } from "../../lib/supabase";
 
 export default function CreateProfile({ onSuccess }) {
@@ -21,6 +22,10 @@ export default function CreateProfile({ onSuccess }) {
     const handleSubmit = async (e) => {
       e.preventDefault();
 
+      // hash password
+      const passwordHash = await bcrypt.hash(password, 10);
+
+
       const { data, error } = await supabase.from("patients").insert([
         {
           name,
@@ -28,6 +33,7 @@ export default function CreateProfile({ onSuccess }) {
           email,
           dob,
           address,
+          password_hash : passwordHash,
         },
       ])
       .select()

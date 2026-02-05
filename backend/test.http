@@ -1,0 +1,6 @@
+POST http://localhost:5000/auth/send-otp
+Content-Type: application/json
+
+{
+  "contact" : "projectof698@gmail.com"
+}

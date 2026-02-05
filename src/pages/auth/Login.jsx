@@ -2,29 +2,55 @@
 
 import { useState } from "react";
 import Notification from "../../components/common/Notification";
+import bcrypt from 'bcryptjs';
+import { supabase } from '../../lib/supabase';
 import "../../styles/Login.css";
 
 export default function Login({ onSuccess }) {
-  const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
   const [notify, setNotify] = useState("");
+  const [identifier, setIdentifier ] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!number || !password) {
-      setNotify("Please enter phone number and password");
+    if (!identifier || !password) {
+      setNotify("Please enter phone/email and password");
       return;
     }
 
-    console.log("Number:", number);
-    console.log("Password:", password);
+    const { data } = await supabase
+      .from("patients")
+      .select("*")
+      .or(`phone.eq."${identifier}",email.eq."${identifier}"`)
+      .maybeSingle();
 
-    setNotify("Login successful");
+      if(!data) {
+        setNotify("User not found");
+        return;
+      }  
 
-    setTimeout(() => {
-      onSuccess && onSuccess();
-    }, 1000);
+      if(!data.password_hash) {
+        setNotify("password not set, Please create profile again. ");
+        return;
+      }
+
+      setNotify("");
+      const isMatch = await bcrypt.compare(password, data.password_hash);
+
+      if(!isMatch) {
+        setNotify("Invalid Password");
+        return;
+      }
+
+      localStorage.setItem("patientId", data.id);
+      localStorage.setItem("patientEmail", data.email);
+      
+      setNotify("Login successful");
+
+      setTimeout(() => {
+         onSuccess && onSuccess();
+    }, 800);
   };
 
   return (
@@ -36,10 +62,10 @@ export default function Login({ onSuccess }) {
           <h2>Login</h2>
 
           <input
-            type="tel"
-            placeholder="Phone Number"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
+            type="text"
+            placeholder="Phone number or email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             required
           />
 

@@ -8,12 +8,15 @@ import RaiseComplaint from "../components/patient/RaiseComplaint";
 import PatientDashboard from "../containers/PatientDashboard";
 import Login from "../pages/auth/Login";
 import ForgotPassword from "../pages/auth/ForgotPassword";
+import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <AddEmployeePage />, // temporary home
-  },
+  path: "/",
+  element: localStorage.getItem("patientId")
+    ? <ProtectedRoute><PatientDashboard /></ProtectedRoute>
+    : <Login onSuccess={() => window.location.href = "/patient-dashboard"} />,
+},
   {
     path: "/add-employee",
     element: <AddEmployeePage />,
@@ -40,11 +43,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/patient-dashboard",
-    element: <PatientDashboard />,
+    element: (<ProtectedRoute>
+      <PatientDashboard />
+    </ProtectedRoute> 
+    ),
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <Login onSuccess={() => window.location.href = "/patient-dashboard"} />,
   },
   {
     path: "/forgot-password",
