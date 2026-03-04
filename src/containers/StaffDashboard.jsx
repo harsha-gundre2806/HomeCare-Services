@@ -7,8 +7,8 @@ import DashboardLayout from "../layout/DashboardLayout";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
 import ServiceStatus from "../components/staff/ServiceStatus";
-import MyRating from "../components/staff/MyRatings";
-import MyAssessment from "../pages/staff/MyAssignments";
+import MyRatingsContainer from "./staff/MyRatingsContainer";
+import StaffAssignmentsContainer from "./staff/StaffAssignmentsContainer";
 
 export default function StaffDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -22,13 +22,13 @@ export default function StaffDashboard() {
   const renderContent = () => {
     switch (activeTab) {
       case "assignments":
-        return <MyAssessment />;
+        return <StaffAssignmentsContainer />;
 
       case "status":
         return <ServiceStatus />;
 
       case "ratings":
-        return <MyRating />;
+        return <MyRatingsContainer />;
 
       default:
         return (
