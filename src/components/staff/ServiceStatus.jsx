@@ -1,27 +1,56 @@
 //Component to update and display current service status progress
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
 import "../../styles/ServiceStatus.css";
 
 
 export default function ServiceStatus() {
-  const steps = ["queued", "assigned", "medication", "completed"];
+  const steps = ["pending", "assigned", "completed"];
 
-  const [services, setServices] = useState([
-    { id: 1, status: "queued", name: "Medicine Delivery", patient: "Ravi" },
-    { id: 2, status: "assigned", name: "Injection", patient: "Sita" },
-    { id: 3, status: "medication", name: "Lab Test", patient: "Anil" },
-  ]);
+  const [services, setServices] = useState([]);
 
-  const moveNext = (id) => {
-    setServices((prev) =>
-      prev.map((s) => {
-        if (s.id !== id) return s;
-        const nextIndex = steps.indexOf(s.status) + 1;
-        return { ...s, status: steps[nextIndex] || "completed" };
-      })
-    );
-  };
+  useEffect(() => {
+  loadServices();
+}, []);
+
+async function loadServices() {
+  const { data, error } = await supabase
+    .from("service_requests")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error loading services:", error);
+    return;
+  }
+
+  setServices(data || []);
+}
+
+  const moveNext = async (id) => {
+    console.log("Button clicked for service:", id);
+  const service = services.find((s) => s.id === id);
+  if (!service) return;
+  const nextIndex = steps.indexOf(service.status) + 1;
+  const nextStatus = steps[nextIndex] || "completed";
+
+  const { data, error } = await supabase
+    .from("service_requests")
+    .update({ status: nextStatus })
+    .eq("id", id)
+    .select();
+
+console.log("Update result:", data);
+console.log("Update error:", error);
+
+  if (error) {
+    console.error("Status update failed:", error);
+    return;
+  }
+
+  loadServices();
+};
 
   return (
     <div className="service-container">
@@ -36,8 +65,8 @@ export default function ServiceStatus() {
             {/* DETAILS */}
             <div className="service-info">
               <p><b>Service ID:</b> {service.id}</p>
-              <p><b>Service Name:</b> {service.name}</p>
-              <p><b>Patient Name:</b> {service.patient}</p>
+              <p><b>Service Name:</b> {service.service_type}</p>
+              <p><b>Patient Name:</b> {service.name}</p>
               <p><b>Current Status:</b> {service.status}</p>
             </div>
 
